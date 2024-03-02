@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <title>Deens Academy-Late Entry</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="center">
+        <h1>Late Entry-Student Details</h1>
+        <form method="POST" action="/submit">
+            <div class="txt_field">
+                <input type="text" name="name" id="name" placeholder="Name" required />
+
+            </div>
+            <div class="txt_field">
+                <input type="number" name="class" id="class" placeholder="Class" required />
+
+            </div>
+            <div class="txt_field">
+                <label style="width: 100%;
+                    padding: 0 5px;
+                    height: 40px;
+                    font-size: 110%;
+                    border: none;
+                    background: none;
+                    outline: none;
+                    color: #adadad;">Section : </label>
+                <select style="width:30%;padding-left: 10%;"name="section" id="section" required>
+                    <option value="a">A</option>
+                    <option value="b">B</option>
+                    <option value="c">C</option>
+                    <option value="d">D</option>
+                    <option value="e">E</option>
+                </select>
+
+            </div>
+            <div class="txt_field">
+                <input type="date" name="date" id="date" />
+
+            </div>
+            <div class="txt_field">
+                <input type="time" name="time" id="time" />
+
+            </div>
+            <input type="submit" value="Add" /><input type="reset" value="Reset"/>
+            
+            
+         
+        </form>
+    </div>
+</body>
+
+</html>

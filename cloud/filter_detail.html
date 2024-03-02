@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@700&family=Poppins:wght@400;500;600&display=swap');
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+body{
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(120deg,rgb(156, 9, 66), rgb(4, 100, 12));
+  height: 100vh;
+  overflow: hidden;
+}
+.center{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  height: 100%;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 10px 10px 15px rgba(0,0,0,0.05);
+}
+.center h1{
+  text-align: center;
+  padding: 20px 0;
+  border-bottom: 1px solid silver;
+}
+.center form{
+  padding: 0% 5%;
+  box-sizing: border-box;
+}
+form .txt_field{
+  position: relative;
+  border-bottom: 2px solid #adadad;
+  margin: 1.7% 0%;
+}
+.txt_field input{
+  width: 100%;
+  padding: 0 5px;
+  height: 40px;
+  font-size: 110%;
+  border: none;
+  background: none;
+  outline: none;
+}
+
+.txt_field span::before{
+  content: '';
+  position: absolute;
+  top: 40px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: #2691d9;
+  transition: .5s;
+}
+.txt_field input:focus ~ label,
+.txt_field input:valid ~ label{
+  top: -5px;
+  color: #2691d9;
+}
+.txt_field input:focus ~ span::before,
+.txt_field input:valid ~ span::before{
+  width: 100%;
+}
+.pass{
+  margin: -5px 0 20px 5px;
+  color: #a6a6a6;
+  cursor: pointer;
+}
+.pass:hover{
+  text-decoration: underline;
+}
+input[type="submit"]{
+  width: 50%;
+  height: 50px;
+  border: 1px solid;
+  background: #2691d9;
+  border-radius: 25px;
+  font-size: 18px;
+  color: #e9f4fb;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+}
+input[type="submit"]:hover{
+  border-color: #2691d9;
+  transition: .5s;
+}
+input[type="reset"]{
+  width: 50%;
+  height: 50px;
+  border: 1px solid;
+  background: #2691d9;
+  border-radius: 25px;
+  font-size: 18px;
+  color: #e9f4fb;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+}
+input[type="reset"]:hover{
+  border-color: #2691d9;
+  transition: .5s;
+}
+
+    </style>
+    <title>Filter Records</title>
+</head>
+
+<body>
+    <div class="center">
+        <h1>Filter and Obtain Late Entry Records</h1>
+        <form method="POST" action="/filter">
+            <div class="txt_field">
+                <input type="text" name="name" id="name" class="form-control" placeholder="Name here" />
+            </div>
+            <div class="txt_field">
+                <input type="number" name="class" id="class" class="form-control" placeholder="Class here" />
+            </div>
+            <div class="txt_field">
+                <label style="width: 100%;
+                    padding: 0 5px;
+                    height: 40px;
+                    font-size: 110%;
+                    border: none;
+                    background: none;
+                    outline: none;
+                    color: #adadad;">Class Range : </label>
+                <select style="width:30%;padding-left: 10%;"name="range" id="range">
+                    <option value="">-</option>
+                    <option value="1-4">1-4</option>
+                    <option value="5-8">5-8</option>
+                    <option value="9-12">9-12</option>
+                </select>
+            </div>
+            <div class="txt_field">
+                <label style="width: 100%;
+                    padding: 0 5px;
+                    height: 40px;
+                    font-size: 110%;
+                    border: none;
+                    background: none;
+                    outline: none;
+                    color: #adadad;">Section : </label>
+                <select style="width:30%;padding-left: 10%;"name="section" id="section">
+                    <option value="">-</option>
+                    <option value="a">A</option>
+                    <option value="b">B</option>
+                    <option value="c">C</option>
+                    <option value="d">D</option>
+                    <option value="e">E</option>
+                </select>
+            </div>
+            <div class="txt_field">
+               
+                <input type="number" name="year" id="year" placeholder="Year Here">
+            </div>
+
+            <div class="txt_field">
+               
+                <input type="number" name="month" id="month" placeholder="Month Here(1-12)">
+            </div>
+            <div class="txt_field">
+                
+                <input type="number" name="date" id="date" placeholder="Date here (1-31)">
+            </div>
+            <div class="txt_field">
+                
+                <input type="time" name="timestamp" id="timestamp" placeholder="Time here">
+            </div>
+            <div class="txt_field">
+                
+                <input type="password" name="password" placeholder="Access Password" required>
+            </div>
+
+            <input type="submit" value="Filter"/><input type="reset" value="Reset"/>
+           
+            
+
+        </form>
+    </div>
+</body>
+
+</html>
