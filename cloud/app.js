@@ -55,6 +55,10 @@ app.post('/submit', async (req, res) => {
 app.get("/details", async (req, res) => {
   let body = JSON.parse(req.query.data)
   let file = `
+    <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    </head>
     <style>
     @import url(https://fonts.googleapis.com/css?family=Roboto:400,500,700,300,100);
 
@@ -74,6 +78,7 @@ app.get("/details", async (req, res) => {
       padding:5px;
       width: 200%;
     }
+
     
     .table-title h3 {
        color: #fafafa;
@@ -100,6 +105,11 @@ app.get("/details", async (req, res) => {
       box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
       animation: float 5s infinite;
     }
+    #maxRows{
+      width:50%;
+      margin:auto;
+    }
+
      
     th {
       color:#D5DDE5;;
@@ -196,26 +206,189 @@ app.get("/details", async (req, res) => {
     td.text-center {
       text-align: center;
     }
-    
+    .pagination li:hover{
+    cursor: pointer;
+    }
+		table tbody tr {
+			display: none;
+		}
     td.text-right {
       text-align: right;
     }
+    div.pagination-container {
+      margin-left:45%
+    }
     </style>
+
     <div class="table-title">
     <h3>Late Entries</h3>
     </div>
-    <table class="table-fill">
-    <thead>
-    <tr>
-    <th class="text-left">Name</th>
-    <th class="text-left">Section</th>
-    <th class="text-left">Grade</th>
-    <th class="text-left">Late Arrivals</th>
-    <th class="text-left">No. Of Late Arrivals</th>
-    </tr>
-    </thead>
-    <tbody class="table-hover">
+
+    <div class="form-group"> 	<!--		Show Numbers Of Rows 		-->
+      <select class="form-control" name="state" id="maxRows">
+          <option value="5000">Show ALL Rows</option>
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="70">70</option>
+          <option value="100">100</option>
+      </select>
+		</div>
+    <div class='pagination-container' >
+				<nav>
+				  <ul class="pagination" style= "margin-left:10px">
+            
+            <li data-page="prev" >
+								     <span> < <span class="sr-only"></span></span>
+								    </li>
+				   
+        <li data-page="next" id="prev">
+								       <span> > <span class="sr-only"></span></span>
+								    </li>
+				  </ul>
+				</nav>
+		</div>
+    <table class="table-fill table table-striped table-class" id="table-id">
+      <thead>
+      <tr>
+      <th class="text-left">Name</th>
+      <th class="text-left">Section</th>
+      <th class="text-left">Grade</th>
+      <th class="text-left">Late Arrivals</th>
+      <th class="text-left">No. Of Late Arrivals</th>
+      </tr>
+      </thead>
+      <tbody class="table-hover">
     `
+  script = `<script>
+    getPagination('#table-id');
+    function getPagination(table) {
+      var lastPage = 1;
+      $('#maxRows')
+        .on('change', function(evt) {
+        lastPage = 1;
+          $('.pagination')
+            .find('li')
+            .slice(1, -1)
+            .remove();
+          var trnum = 0; // reset tr counter
+          var maxRows = parseInt($(this).val()); // get Max Rows from select option
+          if (maxRows == 5000) {
+            $('.pagination').hide();
+          } else {
+            $('.pagination').show();
+          }
+          var totalRows = $(table + ' tbody tr').length; // numbers of rows
+          $(table + ' tr:gt(0)').each(function() {
+            // each TR in  table and not the header
+            trnum++; // Start Counter
+            if (trnum > maxRows) {
+              // if tr number gt maxRows
+
+              $(this).hide(); // fade it out
+            }
+            if (trnum <= maxRows) {
+              $(this).show();
+            } // else fade in Important in case if it ..
+          }); //  was fade out to fade it in
+          if (totalRows > maxRows) {
+            // if tr total rows gt max rows option
+            var pagenum = Math.ceil(totalRows / maxRows); // ceil total(rows/maxrows) to get ..
+            //	numbers of pages
+            for (var i = 1; i <= pagenum; ) {
+              // for each page append pagination li
+              $('.pagination #prev')
+                .before(
+                  '<li data-page="' +
+                    i +
+                    '">\
+                      <span>' +
+                    i++ +
+                    '<span class="sr-only"></span></span>\
+                    </li>'
+                )
+                .show();
+            } // end for i
+          } // end if row count > max rows
+          $('.pagination [data-page="1"]').addClass('active'); // add active class to the first li
+          $('.pagination li').on('click', function(evt) {
+            // on click each page
+            evt.stopImmediatePropagation();
+            evt.preventDefault();
+            var pageNum = $(this).attr('data-page'); // get it's number
+
+            var maxRows = parseInt($('#maxRows').val()); // get Max Rows from select option
+
+            if (pageNum == 'prev') {
+              if (lastPage == 1) {
+                return;
+              }
+              pageNum = --lastPage;
+            }
+            if (pageNum == 'next') {
+              if (lastPage == $('.pagination li').length - 2) {
+                return;
+              }
+              pageNum = ++lastPage;
+            }
+
+            lastPage = pageNum;
+            var trIndex = 0; // reset tr counter
+            $('.pagination li').removeClass('active'); // remove active class from all li
+            $('.pagination [data-page="' + lastPage + '"]').addClass('active'); // add active class to the clicked
+            // $(this).addClass('active');					// add active class to the clicked
+          limitPagging();
+            $(table + ' tr:gt(0)').each(function() {
+              // each tr in table not the header
+              trIndex++; // tr index counter
+              // if tr index gt maxRows*pageNum or lt maxRows*pageNum-maxRows fade if out
+              if (
+                trIndex > maxRows * pageNum ||
+                trIndex <= maxRows * pageNum - maxRows
+              ) {
+                $(this).hide();
+              } else {
+                $(this).show();
+              } //else fade in
+            }); // end of for each tr in table
+          }); // end of on click pagination list
+        limitPagging();
+        })
+        .val(5)
+        .change();
+
+      // end of on select change
+
+      // END OF PAGINATION
+    }
+    function limitPagging(){
+      // alert($('.pagination li').length)
+      if($('.pagination li').length > 7 ){
+          if( $('.pagination li.active').attr('data-page') <= 3 ){
+          $('.pagination li:gt(5)').hide();
+          $('.pagination li:lt(5)').show();
+          $('.pagination [data-page="next"]').show();
+        }if ($('.pagination li.active').attr('data-page') > 3){
+          $('.pagination li:gt(0)').hide();
+          $('.pagination [data-page="next"]').show();
+          for( let i = ( parseInt($('.pagination li.active').attr('data-page'))  -2 )  ; i <= ( parseInt($('.pagination li.active').attr('data-page'))  + 2 ) ; i++ ){
+            $('.pagination [data-page="'+i+'"]').show();
+          }
+        }
+      }
+    }
+    $(function() {
+      // Just to append id number for each row
+      $('table tr:eq(0)').prepend('<th> ID </th>');
+      var id = 0;
+      $('table tr:gt(0)').each(function() {
+        id++;
+        $(this).prepend('<td>' + id + '</td>');
+      });
+    });
+    </script>`
   body.year = parseInt(body.year, 10) ? parseInt(body.year, 10) : ""
   body.month = parseInt(body.month, 10) ? parseInt(body.month, 10) : ""
   body.date = parseInt(body.date, 10) ? parseInt(body.date, 10) : ""
@@ -237,15 +410,14 @@ app.get("/details", async (req, res) => {
         }
       }
     }
-    if(query_string[0] == undefined){
+    if (query_string[0] == undefined) {
       return query
     }
-    else{
-      return query + " WHERE "+query_string.join(" AND ")
+    else {
+      return query + " WHERE " + query_string.join(" AND ")
     }
-    
-  }
 
+  }
   if (body.class != "") {
     let obj = {}
     let query = gen_query(body.name.toUpperCase(), body.section.toUpperCase(), body.class, body.year, body.month, body.date, body.timestamp)
@@ -270,7 +442,7 @@ app.get("/details", async (req, res) => {
             <td class="text-left">${obj[Object.keys(obj)[j]].length}</td>
             </tr>`
       }
-      file += '</tbody></table>'
+      file += `</tbody></table>${script}`
       res.send(
         file
       )
@@ -300,32 +472,36 @@ app.get("/details", async (req, res) => {
               }
             }
             if ((i - 1 == classes[1])) {
-
               if (Object.keys(obj)[0] == undefined) {
-                res.send(file);
+                resolve(file);
                 return
               }
               for (let j = 0; j < Object.keys(obj).length; j++) {
                 let key = Object.keys(obj)[j].split(",")
                 table_to_add = table_to_add + `<tr>
-            <td class="text-left">${key[0]}</td>
-            <td class="text-left">${key[1]}</td>
-            <td class="text-left">${key[2]}</td>
-            <td class="text-left">${obj[Object.keys(obj)[j]].join(" || ")}</td>
-            <td class="text-left">${obj[Object.keys(obj)[j]].length}</td>
-            </tr>`
+                  <td class="text-left">${key[0]}</td>
+                  <td class="text-left">${key[1]}</td>
+                  <td class="text-left">${key[2]}</td>
+                  <td class="text-left">${obj[Object.keys(obj)[j]].join(" || ")}</td>
+                  <td class="text-left">${obj[Object.keys(obj)[j]].length}</td>
+                </tr>`
                 if ((Object.keys(obj)[j] == Object.keys(obj).slice(-1)[0])) {
-                  res.send(
-                    file + table_to_add
-                  )
+                                
+                  resolve(file + `${table_to_add}</tbody></table>${script}`);
+                  // res.send(
+                  //   file + `${table_to_add}</tbody></table>`
+                  // )
                 }
               }
             }
             resolve();
           });
         })
+      } 
+      final = await query().then(i++)
+      if (final != undefined){
+        res.send(final)
       }
-      await query().then(i++)
     }
   }
   else {
@@ -352,7 +528,7 @@ app.get("/details", async (req, res) => {
             <td class="text-left">${obj[Object.keys(obj)[j]].length}</td>
             </tr>`
       }
-      file += '</tbody></table>'
+      file += `</tbody></table>${script}`
       res.send(
         file
       )
